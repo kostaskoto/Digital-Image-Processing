@@ -2,43 +2,68 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 import math
+import cmath
+import cv2
 
 img = np.asarray(Image.open('aerial.tiff'))
-# print(repr(img))
-f, imgplot = plt.subplots(2,3)
+print(repr(img))
+f, imgplot = plt.subplots(3,3)
 
 imgplot[0][0].imshow(img, cmap='gray')
 
 #ex1.1.1
-fimage = abs(np.fft.fftshift(np.fft.fft2(img)))
+fimage = np.fft.fftshift(np.fft.fft2(img))
 # print(repr(fimage))
-imgplot[0][1].imshow(fimage, cmap='gray')
-imgplot[0][2].imshow(np.log(fimage), cmap='gray')
+imgplot[0][1].imshow(abs(fimage), cmap='gray')
+imgplot[0][2].imshow(np.log(abs(fimage)), cmap='gray')
 
 #ex1.1.3
-gaussian = [[0]*len(fimage[0]) for i in range(len(fimage))]
-σ = 0.03
-k = 1/2*math.pi*σ**2
+# sigma = 8 # standard deviation of Gaussian
+# ksize = len(fimage) # kernel size
+# gaussian = cv2.getGaussianKernel(ksize, sigma) # create a normalized 1D kernel
+# gaussian = gaussian.dot(gaussian.T) # create a 2D kernel by outer product
 
-for i in range(len(gaussian)):
-    for j in range(len(gaussian[0])):
-        gaussian[i][j] = k*np.exp(-((i-int(len(gaussian)/2))**2  + (j-int(len(gaussian[0])/2))**2)/2*σ**2)
+# # gaussian = np.fft.fftshift(gaussian)
 
-# gaussian = np.fft.fftshift(gaussian)
-imgplot[1][0].imshow(gaussian, cmap='gray')
+# imgplot[1][0].imshow(gaussian, cmap='gray')
 
-logfimage = np.log(fimage)
-norm = np.linalg.norm(gaussian) 
-ngaussian = gaussian/norm
-lpfimage = [[0]*len(fimage[0]) for i in range(len(fimage))]
-for i in range(len(lpfimage)):
-    for j in range(len(lpfimage[0])):
-        lpfimage[i][j] =  logfimage[i][j] * ngaussian[i][j]
+# lpfimage =  fimage * gaussian
 
-imgplot[1][1].imshow(lpfimage, cmap='gray')
+# # print(repr([lpfimage[0]]))
+# imgplot[1][1].imshow(abs(np.array(np.log(lpfimage))), cmap='gray')
+# print(lpfimage)
+# print(np.exp(lpfimage))
+# print(fimage)
 
-# lpimage = np.fft.ifft2(lpfimage)
-# imgplot[1][2].imshow(lpfimage, cmap='gray')
+#Ideal low pass
+radius = 40
+mask = np.zeros_like(img)
+cy = mask.shape[0] // 2
+cx = mask.shape[1] // 2
+cv2.circle(mask, (cx,cy), radius, (255,255,255), -1)[0]
+lpfimage = np.multiply(fimage,mask) / 255
+imgplot[1][0].imshow(mask, cmap='gray')
+
+imgplot[1][1].imshow(abs(np.array(np.log(lpfimage))), cmap='gray')
+
+lpfshiftedimage = np.fft.ifftshift(lpfimage) # shift back the filtered image
+lpimage = np.fft.ifft2(lpfshiftedimage) # inverse Fourier transform
+imgplot[1][2].imshow(lpimage.astype(np.uint8), cmap='gray') # convert to uint8 and display
+
+#Ideal high pass
+radius = 10
+maskhp = np.full_like(img,255)
+cy = maskhp.shape[0] // 2
+cx = maskhp.shape[1] // 2
+cv2.circle(maskhp, (cx,cy), radius, (0,0,0), -1)[0]
+lpfimage = np.multiply(fimage,maskhp) / 255
+imgplot[2][0].imshow(maskhp, cmap='gray')
+
+imgplot[2][1].imshow(abs(np.log(lpfimage)), cmap='gray')
+
+lpfshiftedimage = np.fft.ifftshift(lpfimage) # shift back the filtered image
+lpimage = np.fft.ifft2(lpfshiftedimage) # inverse Fourier transform
+imgplot[2][2].imshow(lpimage.astype(np.uint8), cmap='gray') # convert to uint8 and display
 
 plt.show()
 
