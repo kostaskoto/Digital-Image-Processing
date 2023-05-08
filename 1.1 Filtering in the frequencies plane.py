@@ -18,7 +18,7 @@ imgplot[0][1].imshow(abs(fimage), cmap='gray')
 imgplot[0][2].imshow(np.log(abs(fimage)), cmap='gray')
 
 #ex1.1.3
-# sigma = 8 # standard deviation of Gaussian
+# sigma = 2 # standard deviation of Gaussian
 # ksize = len(fimage) # kernel size
 # gaussian = cv2.getGaussianKernel(ksize, sigma) # create a normalized 1D kernel
 # gaussian = gaussian.dot(gaussian.T) # create a 2D kernel by outer product
