@@ -48,10 +48,10 @@ imgplot[1][1].imshow(abs(np.array(np.log(lpfimage))), cmap='gray')
 
 lpfshiftedimage = np.fft.ifftshift(lpfimage) # shift back the filtered image
 lpimage = np.fft.ifft2(lpfshiftedimage) # inverse Fourier transform
-imgplot[1][2].imshow(lpimage.astype(np.uint8), cmap='gray') # convert to uint8 and display
+imgplot[1][2].imshow(lpimage.clip(0,255).astype(np.uint8), cmap='gray') # convert to uint8 and display
 
 #Ideal high pass
-radius = 10
+radius = 15
 maskhp = np.full_like(img,255)
 cy = maskhp.shape[0] // 2
 cx = maskhp.shape[1] // 2
@@ -63,7 +63,7 @@ imgplot[2][1].imshow(abs(np.log(lpfimage)), cmap='gray')
 
 lpfshiftedimage = np.fft.ifftshift(lpfimage) # shift back the filtered image
 lpimage = np.fft.ifft2(lpfshiftedimage) # inverse Fourier transform
-imgplot[2][2].imshow(lpimage.astype(np.uint8), cmap='gray') # convert to uint8 and display
+imgplot[2][2].imshow(lpimage.clip(0,255).astype(np.uint8), cmap='gray') # convert to uint8 and display
 
 plt.show()
 
