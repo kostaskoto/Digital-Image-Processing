@@ -44,7 +44,7 @@ cv2.circle(mask, (cx,cy), radius, (255,255,255), -1)[0]
 lpfimage = np.multiply(fimage,mask) / 255
 imgplot[1][0].imshow(mask, cmap='gray')
 
-imgplot[1][1].imshow(abs(np.array(np.log(lpfimage))), cmap='gray')
+imgplot[1][1].imshow(abs(np.array(np.log(lpfimage + 1))), cmap='gray')
 
 lpfshiftedimage = np.fft.ifftshift(lpfimage) # shift back the filtered image
 lpimage = np.fft.ifft2(lpfshiftedimage) # inverse Fourier transform
@@ -59,7 +59,7 @@ cv2.circle(maskhp, (cx,cy), radius, (0,0,0), -1)[0]
 lpfimage = np.multiply(fimage,maskhp) / 255
 imgplot[2][0].imshow(maskhp, cmap='gray')
 
-imgplot[2][1].imshow(abs(np.log(lpfimage)), cmap='gray')
+imgplot[2][1].imshow(abs(np.log(lpfimage + 1)), cmap='gray')
 
 lpfshiftedimage = np.fft.ifftshift(lpfimage) # shift back the filtered image
 lpimage = np.fft.ifft2(lpfshiftedimage) # inverse Fourier transform
