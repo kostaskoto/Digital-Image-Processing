@@ -7,7 +7,7 @@ import cv2
 
 img = np.asarray(Image.open('aerial.tiff'))
 print(repr(img))
-f, imgplot = plt.subplots(3,3)
+f, imgplot = plt.subplots(3,4)
 
 imgplot[0][0].imshow(img, cmap='gray')
 
@@ -44,11 +44,15 @@ cv2.circle(mask, (cx,cy), radius, (255,255,255), -1)[0]
 lpfimage = np.multiply(fimage,mask) / 255
 imgplot[1][0].imshow(mask, cmap='gray')
 
-imgplot[1][1].imshow(abs(np.array(np.log(lpfimage + 1))), cmap='gray')
+lpfshiftedmask = np.fft.ifftshift(mask) # shift back the filtered image
+lpmask = np.fft.ifft2(lpfshiftedmask) # inverse Fourier transform
+imgplot[1][1].imshow(lpmask.clip(0,255).astype(np.uint8), cmap='gray') # convert to uint8 and display
+
+imgplot[1][2].imshow(abs(np.array(np.log(lpfimage + 1))), cmap='gray')
 
 lpfshiftedimage = np.fft.ifftshift(lpfimage) # shift back the filtered image
 lpimage = np.fft.ifft2(lpfshiftedimage) # inverse Fourier transform
-imgplot[1][2].imshow(lpimage.clip(0,255).astype(np.uint8), cmap='gray') # convert to uint8 and display
+imgplot[1][3].imshow(lpimage.clip(0,255).astype(np.uint8), cmap='gray') # convert to uint8 and display
 
 #Ideal high pass
 radius = 15
@@ -59,11 +63,15 @@ cv2.circle(maskhp, (cx,cy), radius, (0,0,0), -1)[0]
 lpfimage = np.multiply(fimage,maskhp) / 255
 imgplot[2][0].imshow(maskhp, cmap='gray')
 
-imgplot[2][1].imshow(abs(np.log(lpfimage + 1)), cmap='gray')
+hpfshiftedmask = np.fft.ifftshift(maskhp) # shift back the filtered image
+hpmask = np.fft.ifft2(hpfshiftedmask) # inverse Fourier transform
+imgplot[2][1].imshow(hpmask.clip(0,255).astype(np.uint8), cmap='gray') # convert to uint8 and display
+
+imgplot[2][2].imshow(abs(np.log(lpfimage + 1)), cmap='gray')
 
 lpfshiftedimage = np.fft.ifftshift(lpfimage) # shift back the filtered image
 lpimage = np.fft.ifft2(lpfshiftedimage) # inverse Fourier transform
-imgplot[2][2].imshow(lpimage.clip(0,255).astype(np.uint8), cmap='gray') # convert to uint8 and display
+imgplot[2][3].imshow(lpimage.clip(0,255).astype(np.uint8), cmap='gray') # convert to uint8 and display
 
 plt.show()
 
