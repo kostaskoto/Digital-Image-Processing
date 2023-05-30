@@ -8,7 +8,6 @@ import cv2
 
 img = np.asarray(Image.open('clock.jpg'))
 imgGray = color.rgb2gray(img)
-print(imgGray)
 
 f, imgplot = plt.subplots(1,4)
 imgplot[0].imshow(imgGray, cmap='gray')
@@ -41,23 +40,25 @@ def houghTransformation(img):
 imgSobel = sobel(imgGray)
 imgplot[1].imshow(imgSobel, cmap='gray')
 
-imgSobelThreshold = sobelThreshold(imgSobel, np.mean(imgSobel))
+imgSobelThreshold = sobelThreshold(imgSobel, 0.4)
 imgplot[2].imshow(imgSobelThreshold, cmap='gray')
 
 gray2rgb = cv2.cvtColor(imgSobelThreshold.astype(np.uint8),cv2.COLOR_GRAY2RGB)
 gray = cv2.cvtColor(gray2rgb,cv2.COLOR_RGB2GRAY)
-lines = cv2.HoughLines(gray,1,np.pi/180,2)
-for rho,theta in lines[0]:
-    a = np.cos(theta)
-    b = np.sin(theta)
-    x0 = a*rho
-    y0 = b*rho
-    x1 = int(x0 + 1000*(-b))
-    y1 = int(y0 + 1000*(a))
-    x2 = int(x0 - 1000*(-b))
-    y2 = int(y0 - 1000*(a))
+lines = cv2.HoughLines(gray,1,np.pi/180,116)
+for i in range(len(lines)):
+    for rho,theta in lines[i]:
+        print(rho,theta)
+        a = np.cos(theta)
+        b = np.sin(theta)
+        x0 = a*rho
+        y0 = b*rho
+        x1 = int(x0 + 1000*(-b))
+        y1 = int(y0 + 1000*(a))
+        x2 = int(x0 - 1000*(-b))
+        y2 = int(y0 - 1000*(a))
 
-    cv2.line(img,(x1,y1),(x2,y2),(0,0,255),2)
+        cv2.line(img,(x1,y1),(x2,y2),(255,255,0),1)
 
 imgplot[3].imshow(img, cmap='gray')
 
