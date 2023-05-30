@@ -57,9 +57,15 @@ def thresholdingMask(blockSize, img):
             
     return thresholdingDCT
 
+def minSquareError(img1, img2):
+    # img1 is the input gray image
+    # img2 is the reconstructed image
+    # return the MSE between the two images
+    return np.mean((img1 - img2) ** 2)
+
 img = cv2.imread("lenna.jpg", cv2.IMREAD_GRAYSCALE)
 print(repr(img))
-f, imgplot = plt.subplots(3,2)
+f, imgplot = plt.subplots(3,3)
 imgplot[0][0].imshow(img, cmap='gray')
 
 blockSize = 32
@@ -74,6 +80,9 @@ for i in range(0, len(dctImg), blockSize):
 
 imgplot[1][0].imshow(zonalDCT, cmap='gray')
 imgplot[1][1].imshow(inverseTwoDDCT(zonalDCT, blockSize), cmap='gray')
+zoneError = minSquareError(img, inverseTwoDDCT(zonalDCT, blockSize))
+print(zoneError)
+# imgplot[1][2].imshow(zoneError.clip(0,255).astype(np.uint8), cmap='gray')
 
 thresholdingDCT = thresholdingMask(blockSize, dctImg)
 imgplot[2][0].imshow(thresholdingDCT, cmap='gray')
