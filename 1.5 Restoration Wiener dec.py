@@ -40,7 +40,7 @@ def inverseFilter(img, filter):
 
 img = np.asarray(Image.open('factory.jpg').convert('L'))
 
-f, imgplot = plt.subplots(3,4)
+f, imgplot = plt.subplots(2,3)
 
 imgplot[0][0].imshow(img, cmap='gray')
 
@@ -56,16 +56,16 @@ gaussian = gaussian / gaussian.max() # normalize the kernel
 
 imgplot[0][1].imshow(np.log(abs(gaussian)+1), cmap='gray')
 
-lpfshiftedmask = np.fft.ifftshift(gaussian) # shift back the filtered image
-lpmask = np.fft.ifft2(lpfshiftedmask)
-imgplot[0][2].imshow(np.log(lpmask.astype(np.uint8)+1), cmap='gray')
+# lpfshiftedmask = np.fft.ifftshift(gaussian) # shift back the filtered image
+# lpmask = np.fft.ifft2(lpfshiftedmask)
+# imgplot[0][2].imshow(np.log(lpmask.astype(np.uint8)+1), cmap='gray')
 
 
 lpfimage =  fimage * gaussian
 # imgplot[1][1].imshow(np.log(abs(lpfimage)+1), cmap='gray')
 lpfshiftedimage = np.fft.ifftshift(lpfimage) # shift back the filtered image
 lpimage = np.fft.ifft2(lpfshiftedimage)
-imgplot[0][3].imshow(lpimage.astype(np.uint8), cmap='gray')
+imgplot[0][2].imshow(lpimage.astype(np.uint8), cmap='gray')
 
 lpimagenoisy = addGaussianNoise(lpimage, 10)
 imgplot[1][0].imshow(lpimagenoisy.astype(np.uint8), cmap='gray')
@@ -73,14 +73,14 @@ imgplot[1][0].imshow(lpimagenoisy.astype(np.uint8), cmap='gray')
 imageWiener = wiener(lpimagenoisy, 10, 10)
 imgplot[1][1].imshow(imageWiener.astype(np.uint8), cmap='gray')
 
-imageInvFilterFourier = inverseFilter(np.fft.fftshift(np.fft.fft2(imageWiener)), gaussian)
-imgplot[1][2].imshow(imageInvFilterFourier.astype(np.uint8), cmap='gray')
+# imageInvFilterFourier = inverseFilter(np.fft.fftshift(np.fft.fft2(imageWiener)), gaussian)
+# imgplot[1][2].imshow(imageInvFilterFourier.astype(np.uint8), cmap='gray')
 
-imageInvFilter = np.fft.ifft2(np.fft.ifftshift(imageInvFilterFourier))
-imgplot[1][3].imshow(imageInvFilter.astype(np.uint8), cmap='gray')
+# imageInvFilter = np.fft.ifft2(np.fft.ifftshift(imageInvFilterFourier))
+# imgplot[1][3].imshow(imageInvFilter.astype(np.uint8), cmap='gray')
 
 
 imageWiener = wiener(lpimagenoisy)
-imgplot[2][1].imshow(imageWiener.astype(np.uint8), cmap='gray')
+imgplot[1][2].imshow(imageWiener.astype(np.uint8), cmap='gray')
 
 plt.show()
